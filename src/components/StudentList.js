@@ -11,7 +11,6 @@ const StudentList = ({nameQuery, tagQuery}) => {
     const getList = async () => {
       const data = await fetchList();
       const dataWithTags = data?.students.map(student => { return {...student, tags: []}});
-      console.log('List: ', list);
       setList({students: dataWithTags});
     }
     getList();
@@ -19,9 +18,10 @@ const StudentList = ({nameQuery, tagQuery}) => {
 
   //Adding Tags to Student Profiles
   const createTag = (tagQuery, index) => {
-    const listCopy = {...list};
-    listCopy.students[index].tags.push(tagQuery);
-    setList(listCopy);
+    const newList = {...list};
+    newList.students[index].tags.push(tagQuery);
+    setList(newList);
+    console.log('List: ', list)
   }
 
   //Search By Name

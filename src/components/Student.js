@@ -58,7 +58,7 @@ const Student = ({tagAdd, studentInfo, studentIndex}) => {
                 <div key={index} className='tag'>{tag}</div>
               ))}
             </div>
-            <input className='tag-input' onKeyDown={enterTag} placeholder='Add a tag' />
+            <input className='tag-input' onKeyUp={enterTag} placeholder='Add a tag' />
           </section>
         </section>
       </section>
