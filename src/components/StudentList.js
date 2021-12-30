@@ -10,8 +10,8 @@ const StudentList = ({nameQuery, tagQuery}) => {
   useEffect(() => {
     const getList = async () => {
       const data = await fetchList();
-      const dataWithTags = data?.students.map(student => { return {...student, tags: []}});
-      setList({students: dataWithTags});
+      const updData = data?.students.map(student => { return {...student, tags: [], fullName: `${student.firstName} ${student.lastName}`}});
+      setList({students: updData});
     }
     getList();
   }, []);
@@ -27,7 +27,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
   //Search By Name
   const searchName = (nameQuery) => {
     if (nameQuery.length > 0) {
-      const filteredNames = list.students.filter(student => student.firstName.toLowerCase().includes(nameQuery.toLowerCase()) || student.lastName.toLowerCase().includes(nameQuery.toLowerCase()));
+      const filteredNames = list.students.filter(student => student.fullName.toLowerCase().includes(nameQuery));
       return {students: filteredNames};
     } else {
       return list;
@@ -37,7 +37,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
   //Search By Tag
   const searchTag = (tagQuery) => {
     if (tagQuery.length > 0) {
-      const filteredTag =  list.students.filter(student => student.tags.includes(tagQuery));
+      const filteredTag =  list.students.filter(student => student.tags.filter(tag => tag.includes(tagQuery)).length > 0);
       return {students: filteredTag};
     } else {
       return list;
