@@ -3,8 +3,10 @@ import Student from './Student';
 
 const StudentList = ({nameQuery, tagQuery}) => {
 
-  //State Hook for List of Student Profiles
+  //State Hooks
   const [list, setList] = useState(null);
+  const [filtNameList, setFiltNameList] = useState(null);
+  const [filtTagList, setFiltTagList] = useState(null);
 
   //Effect Hook for State List with no Dependencies
   useEffect(() => {
@@ -21,7 +23,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
     const newList = {...list};
     newList.students[index].tags.push(tagQuery);
     setList(newList);
-    console.log('List: ', list)
+    console.log('List: ', list);
   }
 
   //Search By Name
@@ -55,6 +57,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
     }
   }
 
+  //Invoking Fillter Functions And Returning Into New States
   let studentList = list;
   if (nameQuery) {
     studentList = searchName(nameQuery);
