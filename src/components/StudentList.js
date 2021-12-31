@@ -5,8 +5,8 @@ const StudentList = ({nameQuery, tagQuery}) => {
 
   //State Hooks
   const [list, setList] = useState(null);
-  const [filtNameList, setFiltNameList] = useState(null);
-  const [filtTagList, setFiltTagList] = useState(null);
+  const [filtNameList, setFiltNameList] = useState([]);
+  const [tagList, setTagList] = useState([]);
 
   //Effect Hook for State List with no Dependencies
   useEffect(() => {
@@ -20,20 +20,28 @@ const StudentList = ({nameQuery, tagQuery}) => {
 
   //Adding Tags to Student Profiles
   const createTag = (tagQuery, index) => {
+    //Filtering By Tag And Setting The Original List
     const newList = {...list};
-    newList.students[index].tags.push(tagQuery);
+    newList.students[index - 1].tags.push(tagQuery);
     setList(newList);
+    //Setting The State For The Tag List
+    setTagList([...tagList, [parseFloat(index) - 1, tagQuery, list.students[index - 1].fullName] ]);
     console.log('List: ', list);
   }
 
+  console.log('TagList: ', tagList);
+
   //Search By Name
   const searchName = (nameQuery) => {
+    //Filtering By Name And Setting the Original List State
     if (nameQuery.length > 0) {
       const filteredNames = list.students.filter(student => student.fullName.toLowerCase().includes(nameQuery));
       return {students: filteredNames};
     } else {
       return list;
     }
+    //Filtering By Name and Setting Name List State
+    // setFiltNameList([...filtNameList, ])
   }
 
   //Search By Tag
@@ -57,20 +65,20 @@ const StudentList = ({nameQuery, tagQuery}) => {
     }
   }
 
-  //Invoking Fillter Functions And Returning Into New States
+  //Invoking Fillter Functions
   let studentList = list;
   if (nameQuery) {
     studentList = searchName(nameQuery);
   } else if (tagQuery) {
     studentList = searchTag(tagQuery);
   } else if (nameQuery && tagQuery) {
-    studentList = searchName(tagQuery);
+    studentList = searchTag(tagQuery);
   }
 
   return (
     <section id='list-container'>
       {studentList?.students?.map((child, index) => (
-        <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} />
+        <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
       ))}
     </section>
   );

@@ -2,10 +2,10 @@ import {useState} from 'react';
 import plus from '../images/plus.png';
 import minus from '../images/minus.png';
 
-const Student = ({tagAdd, studentInfo, studentIndex}) => {
+const Student = ({ tagAdd, studentInfo, studentIndex, tags }) => {
 
   //Destructuring Each Student's Info
-  const {company, email, firstName, grades, lastName, pic, skill, tags} = studentInfo;
+  const {company, email, firstName, grades, lastName, pic, skill, id} = studentInfo;
 
   //Grades List State hook
   const [showGrades, setShowGrades] = useState(false);
@@ -19,7 +19,7 @@ const Student = ({tagAdd, studentInfo, studentIndex}) => {
   const enterTag = (event) => {
     if (event.code === 'Enter' && event.target.value.length > 0) {
       const entry = event.target.value;
-      tagAdd(entry, studentIndex);
+      tagAdd(entry, id);
       event.target.value = '';
     }
   }
@@ -54,9 +54,13 @@ const Student = ({tagAdd, studentInfo, studentIndex}) => {
           </section>
           <section className='tag-wrapper'>
             <div style={{display: 'flex', gap: 10, flexWrap: 'wrap'}}>
-              {tags?.map((tag, index) => (
-                <div key={index} className='tag'>{tag}</div>
-              ))}
+              {tags?.map((tag, index) => {
+                if (tag[0] === (parseFloat(id) - 1)) {
+                  return <div key={index} className='tag'>{tag[1]}</div>
+                } else {
+                  return ''
+                }
+              })}
             </div>
             <input className='tag-input' onKeyUp={enterTag} placeholder='Add a tag' />
           </section>
