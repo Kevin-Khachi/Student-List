@@ -5,7 +5,6 @@ const StudentList = ({nameQuery, tagQuery}) => {
 
   //State Hooks
   const [list, setList] = useState(null);
-  const [filtNameList, setFiltNameList] = useState([]);
   const [tagList, setTagList] = useState([]);
 
   //Effect Hook for State List with no Dependencies
@@ -35,7 +34,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
   const searchName = (nameQuery) => {
     //Filtering By Name And Setting the Original List State
     if (nameQuery.length > 0) {
-      const filteredNames = list.students.filter(student => student.fullName.toLowerCase().includes(nameQuery));
+      const filteredNames = list.students.filter(student => student.fullName.toLowerCase().includes(nameQuery.toLowerCase()));
       return {students: filteredNames};
     } else {
       return list;
@@ -47,7 +46,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
   //Search By Tag
   const searchTag = (tagQuery) => {
     if (tagQuery.length > 0) {
-      const filteredTag =  list.students.filter(student => student.tags.filter(tag => tag.includes(tagQuery)).length > 0);
+      const filteredTag =  list.students.filter(student => student.tags.filter(tag => tag.includes(tagQuery.toLowerCase())).length > 0);
       return {students: filteredTag};
     } else {
       return list;
@@ -71,17 +70,48 @@ const StudentList = ({nameQuery, tagQuery}) => {
     studentList = searchName(nameQuery);
   } else if (tagQuery) {
     studentList = searchTag(tagQuery);
-  } else if (nameQuery && tagQuery) {
-    studentList = searchTag(tagQuery);
   }
 
   return (
     <section id='list-container'>
-      {studentList?.students?.map((child, index) => (
-        <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
-      ))}
+      {tagQuery && nameQuery ?
+        tagList?.map((tagList, index) => {
+          if (tagList[2].toLowerCase().includes(nameQuery)) {
+            return <Student tagAdd={createTag} studentInfo={list.students[index]} key={tagList[0] + 1} studentIndex={tagList[0] + 1} tags={tagList} />
+          }
+        })
+      :
+        studentList?.students?.map((child, index) => (
+          <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
+        ))
+      }
     </section>
   );
 }
 
 export default StudentList;
+
+/*
+[
+    [
+        0,
+        "tag 1",
+        "Ingaberg Orton"
+    ],
+    [
+        0,
+        "tag 2",
+        "Ingaberg Orton"
+    ],
+    [
+        1,
+        "tag 3",
+        "Clarke Boards"
+    ],
+    [
+        1,
+        "tag 4",
+        "Clarke Boards"
+    ]
+]
+*/
