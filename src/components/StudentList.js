@@ -70,48 +70,33 @@ const StudentList = ({nameQuery, tagQuery}) => {
     studentList = searchName(nameQuery);
   } else if (tagQuery) {
     studentList = searchTag(tagQuery);
+  } else if (tagQuery && nameQuery) {
+    studentList = searchTag(tagQuery);
   }
 
   return (
     <section id='list-container'>
-      {tagQuery && nameQuery ?
+      {/* {tagQuery && nameQuery ?
         tagList?.map((tagList, index) => {
           if (tagList[2].toLowerCase().includes(nameQuery)) {
-            return <Student tagAdd={createTag} studentInfo={list.students[index]} key={tagList[0] + 1} studentIndex={tagList[0] + 1} tags={tagList} />
+            return <Student tagAdd={createTag} studentInfo={list.students[index]} studentIndex={tagList[0] + 1} tags={tagList} />
           }
         })
-      :
-        studentList?.students?.map((child, index) => (
-          <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
-        ))
+      : */}
+      {
+        studentList?.students?.map((child, index) => {
+          if (tagQuery && nameQuery) {
+            if ((tagList.filter(tag => tag[1].length > 0)).length > 0) {
+              console.log('Condition: ', (tagList.filter(tag => tag[1].length > 0)).length > 0)
+              return <Student  tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
+            }
+          } else {
+            return <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
+          }
+        })
       }
     </section>
   );
 }
 
 export default StudentList;
-
-/*
-[
-    [
-        0,
-        "tag 1",
-        "Ingaberg Orton"
-    ],
-    [
-        0,
-        "tag 2",
-        "Ingaberg Orton"
-    ],
-    [
-        1,
-        "tag 3",
-        "Clarke Boards"
-    ],
-    [
-        1,
-        "tag 4",
-        "Clarke Boards"
-    ]
-]
-*/
