@@ -17,7 +17,7 @@ const Student = ({ tagAdd, studentInfo, studentIndex, tags }) => {
 
   //Enter Tag On Key Down Attribute Function
   const enterTag = (event) => {
-    if (event.code === 'Enter' && event.target.value.length > 0) {
+    if (event.code === 'Enter' && (event.target.value.length > 0 && !(/^\s+$/.test(event.target.value)))) {
       const entry = event.target.value;
       tagAdd(entry, id);
       event.target.value = '';
