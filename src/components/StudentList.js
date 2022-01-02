@@ -17,6 +17,17 @@ const StudentList = ({nameQuery, tagQuery}) => {
     getList();
   }, []);
 
+  //API Fetch Call
+  const fetchList = async () => {
+    try {
+      const res = await fetch('https://api.hatchways.io/assessment/students');
+      const profiles = await res.json();
+      return profiles;
+    } catch (error) {
+      console.log('COULD NOT LOAD STUDENT PROFILES - ERROR: ', error);
+    }
+  }
+
   //Adding Tags to Student Profiles
   const createTag = (tagQuery, index) => {
     //Filtering By Tag And Setting The Original List
@@ -39,8 +50,6 @@ const StudentList = ({nameQuery, tagQuery}) => {
     } else {
       return list;
     }
-    //Filtering By Name and Setting Name List State
-    // setFiltNameList([...filtNameList, ])
   }
 
   //Search By Tag
@@ -53,24 +62,22 @@ const StudentList = ({nameQuery, tagQuery}) => {
     }
   }
 
-  //API Fetch Call
-  const fetchList = async () => {
-    try {
-      const res = await fetch('https://api.hatchways.io/assessment/students');
-      const profiles = await res.json();
-      return profiles;
-    } catch (error) {
-      console.log('COULD NOT LOAD STUDENT PROFILES - ERROR: ', error);
-    }
+  //Search By Both Name And Tag
+  const searchTagAndName = (queriedTag, queriedName) => {
+    const studListFiltTag = searchTag(queriedTag);
+    const filtNameWithTag = studListFiltTag.students.filter(student => {
+      return student.fullName.toLowerCase().includes(queriedName.toLowerCase())
+    });
+    return {students: filtNameWithTag};
   }
 
   //Invoking Fillter Functions
   let studentList = list;
-  if (nameQuery) {
+  if (tagQuery && nameQuery) {
+    studentList = searchTagAndName(tagQuery, nameQuery);
+  } else if (nameQuery) {
     studentList = searchName(nameQuery);
   } else if (tagQuery) {
-    studentList = searchTag(tagQuery);
-  } else if (tagQuery && nameQuery) {
     studentList = searchTag(tagQuery);
   }
 
@@ -78,13 +85,7 @@ const StudentList = ({nameQuery, tagQuery}) => {
     <section id='list-container'>
       {
         studentList?.students?.map((child, index) => {
-          if (tagQuery && nameQuery) {
-            if (tagList[index]) {
-              return <Student  tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
-            }
-          } else {
-            return <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
-          }
+          return <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
         })
       }
     </section>
