@@ -1,8 +1,7 @@
-import {useEffect, useState} from 'react';
-import Student from './Student';
+import { useEffect, useState } from "react";
+import Student from "./Student";
 
-const StudentList = ({nameQuery, tagQuery}) => {
-
+const StudentList = ({ nameQuery, tagQuery }) => {
   //State Hooks
   const [list, setList] = useState(null);
   const [tagList, setTagList] = useState([]);
@@ -10,66 +9,70 @@ const StudentList = ({nameQuery, tagQuery}) => {
   //Effect Hook for State List with no Dependencies
   useEffect(() => {
     const getList = async () => {
-      const data = await fetchList();
-      const updData = data?.students.map(student => { return {...student, tags: [], fullName: `${student.firstName} ${student.lastName}`}});
-      setList({students: updData});
-    }
+      const studentList = await fetchList();
+      const updatedList = studentList?.students.map((student) => ({
+        ...student,
+        tags: [],
+        fullName: `${student.firstName} ${student.lastName}`,
+      }));
+      setList({ students: updatedList });
+    };
     getList();
   }, []);
+
+  //debug
+  console.log("List: ", list);
+  console.log("tagList: ", tagList);
 
   //API Fetch Call
   const fetchList = async () => {
     try {
-      const res = await fetch('https://api.hatchways.io/assessment/students');
+      const res = await fetch("https://api.hatchways.io/assessment/students");
       const profiles = await res.json();
       return profiles;
     } catch (error) {
-      console.log('COULD NOT LOAD STUDENT PROFILES - ERROR: ', error);
+      console.log("COULD NOT LOAD STUDENT PROFILES - ERROR: ", error);
     }
-  }
+  };
 
   //Adding Tags to Student Profiles
   const createTag = (tagQuery, index) => {
-    //Filtering By Tag And Setting The Original List
-    const newList = {...list};
+    const newList = { ...list };
     newList.students[index - 1].tags.push(tagQuery);
     setList(newList);
     //Setting The State For The Tag List
-    setTagList([...tagList, [parseFloat(index) - 1, tagQuery, list.students[index - 1].fullName] ]);
-    console.log('List: ', list);
-  }
-
-  console.log('TagList: ', tagList);
+    setTagList([
+      ...tagList,
+      [parseFloat(index) - 1, tagQuery, list.students[index - 1].fullName],
+    ]);
+  };
 
   //Search By Name
   const searchName = (nameQuery) => {
-    //Filtering By Name And Setting the Original List State
-    if (nameQuery.length > 0) {
-      const filteredNames = list.students.filter(student => student.fullName.toLowerCase().includes(nameQuery.toLowerCase()));
-      return {students: filteredNames};
-    } else {
-      return list;
-    }
-  }
+    if (nameQuery.length > 0) return list
+    const filteredNames = list.students.filter((student) =>
+      student.fullName.toLowerCase().includes(nameQuery.toLowerCase())
+    );
+    return { students: filteredNames };
+  };
 
   //Search By Tag
   const searchTag = (tagQuery) => {
-    if (tagQuery.length > 0) {
-      const filteredTag =  list.students.filter(student => student.tags.filter(tag => tag.includes(tagQuery.toLowerCase())).length > 0);
-      return {students: filteredTag};
-    } else {
-      return list;
-    }
-  }
+    if (tagQuery.length === 0) return list
+    const filteredTag = list.students.filter((student) =>
+        student.tags.filter((tag) => tag.includes(tagQuery.toLowerCase())).length > 0
+    );
+    return { students: filteredTag };
+  };
 
   //Search By Both Name And Tag
   const searchTagAndName = (queriedTag, queriedName) => {
     const studListFiltTag = searchTag(queriedTag);
-    const filtNameWithTag = studListFiltTag.students.filter(student => {
-      return student.fullName.toLowerCase().includes(queriedName.toLowerCase())
-    });
-    return {students: filtNameWithTag};
-  }
+    const filtNameWithTag = studListFiltTag.students.filter((student) => (
+      student.fullName.toLowerCase().includes(queriedName.toLowerCase())
+    ));
+    return { students: filtNameWithTag };
+  };
 
   //Invoking Fillter Functions
   let studentList = list;
@@ -82,14 +85,20 @@ const StudentList = ({nameQuery, tagQuery}) => {
   }
 
   return (
-    <section id='list-container'>
-      {
-        studentList?.students?.map((child, index) => {
-          return <Student tagAdd={createTag} studentInfo={child} key={index} studentIndex={index} tags={tagList} />
-        })
-      }
+    <section id="list-container">
+      {studentList?.students?.map((child, index) => {
+        return (
+          <Student
+            tagAdd={createTag}
+            studentInfo={child}
+            key={index}
+            studentIndex={index}
+            tags={tagList}
+          />
+        );
+      })}
     </section>
   );
-}
+};
 
 export default StudentList;
